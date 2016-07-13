@@ -18,6 +18,7 @@ public class LabelPropagation {
 	
 	private Vector<Node> nodeList;
 	private Vector<Integer> nodeOrder;
+	private Vector<Integer> threshold;
 	
 	public LabelPropagation() {	}
 	
@@ -26,15 +27,17 @@ public class LabelPropagation {
 		
 		nodeList = new Vector<Node>(numNodes);
 		nodeOrder = new Vector<Integer>(numNodes);
+		threshold = new Vector<Integer>(numNodes);
 		for (int i=0; i<=numNodes; i++) {
 			nodeList.add(new Node(i,i));
 			nodeOrder.add(Integer.valueOf(i));
+			threshold.add(Integer.valueOf(1));
 		}
 		System.out.println("Added " + numNodes + " nodes.");
 		
 		String line = br.readLine();
 		while (line!=null) {
-			String[] parts = line.split("	");
+			String[] parts = line.split(" ");
 			
 			int source = Integer.valueOf(parts[0]);
 			int target = Integer.valueOf(parts[1]);
@@ -130,40 +133,45 @@ public class LabelPropagation {
 	
 	public void findCommunities(String basepath, int numThreads) throws InterruptedException, ExecutionException, IOException {
 		
-		/*memberships = new Vector<Integer>(nodeList.size());
-		for (int i=0; i<nodeList.size(); i++) {
-		      memberships.set(i, Integer.valueOf(i));
-		}*/
-		
 		ExecutorService threadPool = Executors.newFixedThreadPool(numThreads);		
 
 		Vector<LabelPropagationWorker> workers = new Vector<LabelPropagationWorker>(numThreads);
-		for (int j=1; j<=numThreads; j++) {
-			workers.add(new LabelPropagationWorker(nodeList));
+
+		for (int j=1; j<=numThreads; j++) 
+		{
+			workers.add(new LabelPropagationWorker(nodeList,threshold));
 		}
 		
 		int iter=0;
 		int nodesChanged=100;
-		while (nodesChanged>0) {
+		while (nodesChanged>0) 
+		{
 			nodesChanged=0;
-			
 			System.out.println("Running " + (++iter) + " iteration at " + System.currentTimeMillis() + ".");
 			
 			Collections.shuffle(nodeOrder);//DO NOT SHUFFLE nodeList
 			
-			for (int i=0; i<nodeList.size(); i+=numThreads) {
-				for (int j=0; j<numThreads; j++) {
-					if ((j+i)<nodeList.size()) {
+			for (int i=0; i<nodeList.size(); i+=numThreads) 
+			{
+				for (int j=0; j<numThreads; j++) 
+				{
+					if ((j+i)<nodeList.size()) 
+					{
 						workers.get(j).setNodeToProcess(nodeOrder.get(i+j).intValue());
-					} else {
+					}
+					else 
+					{
 						workers.get(j).setNodeToProcess(-1);
 					}
 				}
+				
 				List<Future<Boolean>> results = threadPool.invokeAll(workers);
 				
-				for (int j=0; j<results.size(); j++) {
+				for (int j=0; j<results.size(); j++) 
+				{
 					Boolean r = results.get(j).get();
-					if (r!=null && r.booleanValue()==true) {
+					if (r!=null && r.booleanValue()==true) 
+					{
 						nodesChanged++;
 						if (nodesChanged==1) System.out.println("Another pass will be needed.");
 						break;
@@ -173,29 +181,26 @@ public class LabelPropagation {
 			
 			
 			//Pass complete
-			if (basepath!=null) {
+			if (basepath!=null) 
+			{
 				writeMemberships(basepath+"iter" + iter +"memberships.txt");
 				System.out.println(nodesChanged + " nodes were changed in the last iteration.");
 			}
-				
 		}
 		
 		System.out.println("Detection complete!");
 		threadPool.shutdown();
-		
 	}
-	
-
 
 	public static void main(String[] args) throws IOException, InterruptedException, ExecutionException {
 		LabelPropagation lp = new LabelPropagation();
 		
-		int numNodes = 426000; //Number of nodes in the network
+		int numNodes = 1000; //Number of nodes in the network
 		int numThreads= 8; //Number of threads to use
 		
 		long startTime = System.nanoTime();
 		//input is "edgelist" format "id id" sorted by first id (ids are sequentially numbered 1 to numNodes inclusive)
-		lp.readEdges(numNodes, "ungraph.txt");
+		lp.readEdges(numNodes, "edges.txt");
 		lp.findCommunities("base_output_path",numThreads); //directory to save current list of communities to after each pass as well as final output files
 		lp.writeMemberships("membership.txt");
 		lp.writeMembershipsSmart("memberships_renumbered.txt");
