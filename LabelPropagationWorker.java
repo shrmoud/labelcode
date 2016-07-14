@@ -11,7 +11,7 @@ public class LabelPropagationWorker implements Callable<Boolean>
 	//private Random randGen;
 
 	private int nodeId;
-	private int partitionSize = 50; //Number of Partition Needed from the Graph
+	private int partitionSize = 75; //Number of Partition Needed from the Graph
 
 	// Shared
 	private Vector<Node> nodeList;
@@ -42,7 +42,7 @@ public class LabelPropagationWorker implements Callable<Boolean>
 		this.nodeId=nodeId;
 	}
 
-	
+	/*
 	public boolean findMin(Node currentNode, int maxLabel, int maxCount)
 	{
 		int max = dominantLabels.indexOf(maxLabel);
@@ -65,6 +65,7 @@ public class LabelPropagationWorker implements Callable<Boolean>
 		
 	}
 
+*/
 	
 	@Override
 	public Boolean call() 
@@ -147,10 +148,10 @@ public class LabelPropagationWorker implements Callable<Boolean>
 					//System.out.println("If the current label is not a dominant label, then continue running");
 					continueRunning = true;
 				}
-				currentNode.setLabel(max);
+				currentNode.setLabel(maxLabel);
 				dominantLabels.clear();
 			}
-			else if(threshold.get(max) == partitionSize)
+			else if(threshold.get(max) == partitionSize &&  currentNode.getLabel() == maxLabel)
 			{
 				int currentVal = currentNode.getLabel();
 				if (labelCounts.get(currentVal) != maxCount) 
@@ -185,7 +186,7 @@ public class LabelPropagationWorker implements Callable<Boolean>
 							//System.out.println("Changing Continue Running?");
 							continueRunning = true;
 						}
-						currentNode.setLabel(valIndex);
+						currentNode.setLabel(val);
 						dominantLabels.clear();
 					}
 				}
