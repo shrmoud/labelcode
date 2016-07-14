@@ -15,16 +15,16 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 public class LabelPropagation {
-	
+
 	private Vector<Node> nodeList;
 	private Vector<Integer> nodeOrder;
 	private Vector<Integer> threshold;
-	
+
 	public LabelPropagation() {	}
-	
+
 	public void readEdges(int numNodes, String file) throws IOException {
 		BufferedReader br = new BufferedReader(new FileReader(file));
-		
+
 		nodeList = new Vector<Node>(numNodes);
 		nodeOrder = new Vector<Integer>(numNodes);
 		threshold = new Vector<Integer>(numNodes);
@@ -34,123 +34,120 @@ public class LabelPropagation {
 			threshold.add(Integer.valueOf(1));
 		}
 		System.out.println("Added " + numNodes + " nodes.");
-		
+
 		String line = br.readLine();
 		while (line!=null) {
 			String[] parts = line.split("  ");
-			
+
 			int source = Integer.valueOf(parts[0]);
 			int target = Integer.valueOf(parts[1]);
-			
+
 			//System.out.println("Source is" + source);
 			//System.out.println("Target is" + target);
-			
+
 			nodeList.get(source).addNeighbor(target);
 			nodeList.get(target).addNeighbor(source);
 			line=br.readLine();
 		}
-		
+
 		System.out.println("All edges read.");
 		br.close();
 	}
-	
+
 	public void writeMemberships(String file) throws IOException {
-		
+
 		System.out.println("Writing membership.");
-		
+
 		FileOutputStream fso = new FileOutputStream(file);
 		OutputStreamWriter fileWriter = new OutputStreamWriter(fso,Charset.forName("UTF-8"));
-		
+
 		Node n;
 		for (int i=0; i<nodeList.size(); i++) {
 			n=nodeList.get(i);
 			fileWriter.write(n.getId()+" "+n.getLabel()+"\n");
 		}
-		
+
 		System.out.println("Membership list written.");
-		
+
 		fileWriter.close();
 		fso.close();
 	}
-	
-	
-	public void readMemberships(String file) throws IOException {
+
+
+	public void readMemberships(String file) throws IOException 
+	{
 		System.out.println("Reading memberships.");
-		
 		BufferedReader br = new BufferedReader(new FileReader(file));
-		
+
 		String line = br.readLine();
-		while (line!=null) {
+		while (line!=null) 
+		{
 			String[] parts = line.split(" ");
-			
 			int nodeId = Integer.valueOf(parts[0]);
 			int label = Integer.valueOf(parts[1]);
-			
 			nodeList.get(nodeId).setLabel(label);
-			
 			line=br.readLine();
 		}
-		
 		System.out.println("Memberships loaded from file.");
-
 		br.close();
-		
 	}
-	
-	
-	public void writeMembershipsSmart(String file) throws IOException {
-		
+
+
+	public void writeMembershipsSmart(String file) throws IOException 
+	{
+
 		System.out.println("Writing membership smart.");
-		
-		
 		Map<Integer,Integer> labelMap = new HashMap<Integer,Integer>();
 		int labelCount=0;
-		for (int i=0; i<nodeList.size(); i++) {
+		for (int i=0; i<nodeList.size(); i++) 
+		{
 			int label = nodeList.get(i).getLabel();
 			Integer val =  labelMap.get(Integer.valueOf(label));
-			if (val==null) {
+			if (val==null) 
+			{
 				labelCount++;
 				labelMap.put(Integer.valueOf(label), Integer.valueOf(labelCount));
 			}
 		}
 		System.out.println("Found " + labelCount + " communities.");
-		
+
 		FileOutputStream fso = new FileOutputStream(file);
 		OutputStreamWriter fileWriter = new OutputStreamWriter(fso,Charset.forName("UTF-8"));
-		
+
 		Node n;
-		for (int i=0; i<nodeList.size(); i++) {
+		for (int i=0; i<nodeList.size(); i++) 
+		{
 			n=nodeList.get(i);
 			fileWriter.write(n.getId()+" "+labelMap.get(Integer.valueOf(n.getLabel())).intValue() +"\n");
 		}
-		
+
 		System.out.println("Smart membership list written.");
-		
+
 		fileWriter.close();
 		fso.close();
 	}
-	
-	
-	public void findCommunities(String basepath, int numThreads) throws InterruptedException, ExecutionException, IOException {
-		
-		ExecutorService threadPool = Executors.newFixedThreadPool(numThreads);		
 
+
+	public void findCommunities(String basepath, int numThreads) throws InterruptedException, ExecutionException, IOException 
+	{
+
+		ExecutorService threadPool = Executors.newFixedThreadPool(numThreads);		
 		Vector<LabelPropagationWorker> workers = new Vector<LabelPropagationWorker>(numThreads);
 
 		for (int j=1; j<=numThreads; j++) 
 		{
 			workers.add(new LabelPropagationWorker(nodeList,threshold));
 		}
-		
+
 		int iter=0;
 		int nodesChanged=100;
 		while (nodesChanged>0) 
 		{
 			nodesChanged=0;
 			System.out.println("Running " + (++iter) + " iteration at " + System.currentTimeMillis() + ".");
-			
+
 			Collections.shuffle(nodeOrder);//DO NOT SHUFFLE nodeList
-			
+
 			for (int i=0; i<nodeList.size(); i+=numThreads) 
 			{
 				for (int j=0; j<numThreads; j++) 
@@ -164,9 +161,9 @@ public class LabelPropagation {
 						workers.get(j).setNodeToProcess(-1);
 					}
 				}
-				
+
 				List<Future<Boolean>> results = threadPool.invokeAll(workers);
-				
+
 				for (int j=0; j<results.size(); j++) 
 				{
 					Boolean r = results.get(j).get();
@@ -178,8 +175,8 @@ public class LabelPropagation {
 					}
 				}
 			}
-			
-			
+
+
 			//Pass complete
 			if (basepath!=null) 
 			{
@@ -187,24 +184,25 @@ public class LabelPropagation {
 				System.out.println(nodesChanged + " nodes were changed in the last iteration.");
 			}
 		}
-		
+
 		System.out.println("Detection complete!");
 		threadPool.shutdown();
 	}
 
-	public static void main(String[] args) throws IOException, InterruptedException, ExecutionException {
+	public static void main(String[] args) throws IOException, InterruptedException, ExecutionException 
+	{
 		LabelPropagation lp = new LabelPropagation();
-		
+
 		int numNodes = 10879; //Number of nodes in the network
 		int numThreads= 8; //Number of threads to use
-		
+
 		long startTime = System.nanoTime();
 		//input is "edgelist" format "id id" sorted by first id (ids are sequentially numbered 1 to numNodes inclusive)
 		lp.readEdges(numNodes, "test3.txt");
 		lp.findCommunities("base_output_path",numThreads); //directory to save current list of communities to after each pass as well as final output files
 		lp.writeMemberships("membership.txt");
 		lp.writeMembershipsSmart("memberships_renumbered.txt");
-		
+
 		long estimatedTime = System.nanoTime() - startTime;
 		System.out.println("Elapsed Time is "+estimatedTime);
 	}
