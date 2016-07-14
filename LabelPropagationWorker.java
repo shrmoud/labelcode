@@ -42,7 +42,30 @@ public class LabelPropagationWorker implements Callable<Boolean>
 		this.nodeId=nodeId;
 	}
 
+	
+	public boolean findMin(Node currentNode, int maxLabel, int maxCount)
+	{
+		int max = dominantLabels.indexOf(maxLabel);
+		int currentVal = currentNode.getLabel();		
+		int nVal = threshold.get(max) + 1;
+		threshold.set(max, nVal);
+		int cVal = threshold.get(currentVal) - 1;
+		threshold.set(currentVal, cVal);
+		currentNode.setLabel(max);
+		dominantLabels.clear();
+		if (labelCounts.get(currentVal) != maxCount) 
+		{
+			//System.out.println("If the current label is not a dominant label, then continue running");
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+		
+	}
 
+	
 	@Override
 	public Boolean call() 
 	{
@@ -85,6 +108,7 @@ public class LabelPropagationWorker implements Callable<Boolean>
 
 		}
 
+	//	System.out.println(dominantLabels);
 
 		if(dominantLabels.size() > 0)
 		{
@@ -102,18 +126,20 @@ public class LabelPropagationWorker implements Callable<Boolean>
 					maxLabelCount = newMaxLabelCount;
 				}	 
 			}
+			//System.out.println("I found maxLabel as " + maxLabel);
 		}
 
 		
 		if(dominantLabels.size() > 0 && maxLabel != dominantLabels.get(0))
 		{
-			int maxrand = dominantLabels.indexOf(maxLabel);
-			if(threshold.get(maxrand) < partitionSize)
+			int max = dominantLabels.indexOf(maxLabel);
+			if(threshold.get(max) < partitionSize)
 			{
+				//continueRunning = findMin(currentNode, max, maxCount);
 				//System.out.println("Removing Label which exceeds Threshold");
 				int currentVal = currentNode.getLabel();		
-				int nVal = threshold.get(maxrand) + 1;
-				threshold.set(maxrand, nVal);
+				int nVal = threshold.get(max) + 1;
+				threshold.set(max, nVal);
 				int cVal = threshold.get(currentVal) - 1;
 				threshold.set(currentVal, cVal);
 				if (labelCounts.get(currentVal) != maxCount) 
@@ -121,10 +147,10 @@ public class LabelPropagationWorker implements Callable<Boolean>
 					//System.out.println("If the current label is not a dominant label, then continue running");
 					continueRunning = true;
 				}
-				currentNode.setLabel(maxLabel);
+				currentNode.setLabel(max);
 				dominantLabels.clear();
 			}
-			else if(threshold.get(maxrand) == partitionSize)
+			else if(threshold.get(max) == partitionSize)
 			{
 				int currentVal = currentNode.getLabel();
 				if (labelCounts.get(currentVal) != maxCount) 
@@ -133,38 +159,40 @@ public class LabelPropagationWorker implements Callable<Boolean>
 					continueRunning = true;
 				}
 				dominantLabels.clear();
-			
 			}
 			else
 			{
-				int val = Collections.min(dominantLabels);
-				int rand = dominantLabels.indexOf(val);
-				if(threshold.get(rand) == partitionSize)
+				while(dominantLabels.size() > 0)
 				{
-					//System.out.println("Removing Label which exceeds Threshold");
-					dominantLabels.remove(rand);
-
-				}
-				else				
-				{
-					//System.out.println("In Else");
-					int currentVal = currentNode.getLabel();		
-					int nVal = threshold.get(rand) + 1;
-					threshold.set(rand, nVal);
-					int cVal = threshold.get(currentVal) - 1;
-					threshold.set(currentVal, cVal);
-					if (labelCounts.get(currentVal) != maxCount) 
+					int val = Collections.min(dominantLabels);
+					int valIndex = dominantLabels.indexOf(val);
+					if(threshold.get(val) == partitionSize)
 					{
-						//System.out.println("Changing Continue Running?");
-						continueRunning = true;
+						//System.out.println("Removing Label which exceeds Threshold");
+						dominantLabels.remove(valIndex);
+						continue;
 					}
-					currentNode.setLabel(val);
+					else				
+					{
+						//System.out.println("In Else");
+						int currentVal = currentNode.getLabel();		
+						int nVal = threshold.get(valIndex) + 1;
+						threshold.set(valIndex, nVal);
+						int cVal = threshold.get(currentVal) - 1;
+						threshold.set(currentVal, cVal);
+						if (labelCounts.get(currentVal) != maxCount) 
+						{
+							//System.out.println("Changing Continue Running?");
+							continueRunning = true;
+						}
+						currentNode.setLabel(valIndex);
+						dominantLabels.clear();
+					}
 				}
 			}
 		}
 		else
 		{
-
 			while(dominantLabels.size() > 0)
 			{
 				int val = Collections.min(dominantLabels);
@@ -189,7 +217,7 @@ public class LabelPropagationWorker implements Callable<Boolean>
 						//System.out.println("Changing Continue Running?");
 						continueRunning = true;
 					}
-					break;
+					dominantLabels.clear();
 				}
 			}
 		}
