@@ -40,7 +40,8 @@ public class LabelPropagationWorker implements Callable<Boolean>{
 	{
 		this.nodeId=nodeId;
 	}
-
+	
+	
 	@Override
 	public Boolean call() 
 	{
@@ -147,7 +148,29 @@ public class LabelPropagationWorker implements Callable<Boolean>{
 				}
 				else
 				{
-					//pick random
+					int val = Collections.min(dominantLabels);
+					int rand = dominantLabels.indexOf(val);
+					if(threshold.get(rand) == partitionSize)
+					{
+						//System.out.println("Removing Label which exceeds Threashold");
+						dominantLabels.remove(rand);
+					}
+					else				
+					{
+						//System.out.println("In Else");
+						int currentVal = currentNode.getLabel();		
+						int nVal = threshold.get(rand) + 1;
+						threshold.set(rand, nVal);
+						int cVal = threshold.get(currentVal) - 1;
+						threshold.set(currentVal, cVal);
+						currentNode.setLabel(val);
+						if (labelCounts.get(currentVal) != maxCount) 
+						{
+							//System.out.println("Changing Continue Running?");
+							continueRunning = true;
+						}
+						break;
+					}
 				}
 			}
 			else
