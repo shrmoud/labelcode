@@ -10,7 +10,7 @@ public class LabelPropagationWorker implements Callable<Boolean>{
 	//private Random randGen;
 	
 	private int nodeId;
-	private int partitionSize = 3; //Number of Partition Needed from the Graph
+	private int partitionSize = 50; //Number of Partition Needed from the Graph
 
 	// Shared
 	private Vector<Node> nodeList;
@@ -50,6 +50,12 @@ public class LabelPropagationWorker implements Callable<Boolean>{
 			return Boolean.FALSE;
 		}
 
+		
+		//int maxLabel;
+		//Vector<Integer> counter;
+		int maxLabel, maxLabelCount;
+		
+		
 		boolean continueRunning = false;
 
 		Collections.fill(labelCounts, Integer.valueOf(0));
@@ -72,7 +78,7 @@ public class LabelPropagationWorker implements Callable<Boolean>{
 			if (maxCount < nLabelCount) 
 			{
 				maxCount = nLabelCount;
-				dominantLabels.clear();
+				//dominantLabels.clear();
 				dominantLabels.add(nLabel);
 			}
 			else if (maxCount == nLabelCount) 
@@ -103,22 +109,72 @@ public class LabelPropagationWorker implements Callable<Boolean>{
 	
 		while(dominantLabels.size() > 0)
 		{
-			int val = Collections.min(dominantLabels);
-			int rand = dominantLabels.indexOf(val);
-			if(threshold.get(rand) == partitionSize)
+			//System.out.println("in While");
+			
+			maxLabel = dominantLabels.get(0);
+			//counter.set(i, maxLabel);
+			maxLabelCount = labelCounts.get(maxLabel);
+			
+			
+			//counter = new Vector(nodeList.size());
+			for(int i=1; i<dominantLabels.size();i++)
 			{
-				dominantLabels.remove(rand);
+				int newMaxLabel = dominantLabels.get(i);
+				//counter.set(i, maxLabel);
+				int newMaxLabelCount = labelCounts.get(maxLabel);
+				
+				if(newMaxLabelCount > maxLabelCount)
+				{
+					maxLabel = newMaxLabel;
+					maxLabelCount = newMaxLabelCount;
+				}	 
 			}
-			else				
+			
+			
+			if(maxLabel != dominantLabels.get(0))
 			{
-				int currentVal = currentNode.getLabel();		
-				int nVal = threshold.get(rand) + 1;
-				threshold.set(rand, nVal);
-				int cVal = threshold.get(currentVal) - 1;
-				threshold.set(currentVal, cVal);
-				currentNode.setLabel(val);
-				continueRunning = true;
-				break;
+				int maxrand = dominantLabels.indexOf(maxLabel);
+				if(threshold.get(maxrand) < partitionSize)
+				{
+					//System.out.println("Removing Label which exceeds Threashold");
+					int currentVal = currentNode.getLabel();		
+					int nVal = threshold.get(maxrand) + 1;
+					threshold.set(maxrand, nVal);
+					int cVal = threshold.get(currentVal) - 1;
+					threshold.set(currentVal, cVal);
+					currentNode.setLabel(maxLabel);
+					
+				}
+				else
+				{
+					//pick random
+				}
+			}
+			else
+			{
+				int val = Collections.min(dominantLabels);
+				int rand = dominantLabels.indexOf(val);
+				if(threshold.get(rand) == partitionSize)
+				{
+					//System.out.println("Removing Label which exceeds Threashold");
+					dominantLabels.remove(rand);
+				}
+				else				
+				{
+					//System.out.println("In Else");
+					int currentVal = currentNode.getLabel();		
+					int nVal = threshold.get(rand) + 1;
+					threshold.set(rand, nVal);
+					int cVal = threshold.get(currentVal) - 1;
+					threshold.set(currentVal, cVal);
+					currentNode.setLabel(val);
+					if (labelCounts.get(currentVal) != maxCount) 
+					{
+						//System.out.println("Changing Continue Running?");
+						continueRunning = true;
+					}
+					break;
+				}
 			}
 		}
 		return Boolean.valueOf(continueRunning);

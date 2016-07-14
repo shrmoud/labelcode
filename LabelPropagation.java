@@ -37,7 +37,7 @@ public class LabelPropagation {
 		
 		String line = br.readLine();
 		while (line!=null) {
-			String[] parts = line.split(" ");
+			String[] parts = line.split("  ");
 			
 			int source = Integer.valueOf(parts[0]);
 			int target = Integer.valueOf(parts[1]);
@@ -195,12 +195,12 @@ public class LabelPropagation {
 	public static void main(String[] args) throws IOException, InterruptedException, ExecutionException {
 		LabelPropagation lp = new LabelPropagation();
 		
-		int numNodes = 1000; //Number of nodes in the network
+		int numNodes = 10879; //Number of nodes in the network
 		int numThreads= 8; //Number of threads to use
 		
 		long startTime = System.nanoTime();
 		//input is "edgelist" format "id id" sorted by first id (ids are sequentially numbered 1 to numNodes inclusive)
-		lp.readEdges(numNodes, "edges.txt");
+		lp.readEdges(numNodes, "test3.txt");
 		lp.findCommunities("base_output_path",numThreads); //directory to save current list of communities to after each pass as well as final output files
 		lp.writeMemberships("membership.txt");
 		lp.writeMembershipsSmart("memberships_renumbered.txt");
