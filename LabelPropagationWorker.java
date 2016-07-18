@@ -1,5 +1,4 @@
 import java.util.Collections;
-import java.util.Random;
 import java.util.Vector;
 import java.util.concurrent.Callable;
 
@@ -11,7 +10,7 @@ public class LabelPropagationWorker implements Callable<Boolean>
 	//private Random randGen;
 
 	private int nodeId;
-	private int partitionSize = 75; //Number of Partition Needed from the Graph
+	private int partitionSize = 100; //Number of Partition Needed from the Graph
 
 	// Shared
 	private Vector<Node> nodeList;
@@ -83,74 +82,67 @@ public class LabelPropagationWorker implements Callable<Boolean>
 		}
 
 		int dominantLabelIndex = -1, index = -1;
+		
+		System.out.println(dominantLabels);
+		System.out.println(labelCounts);
 
-		if(dominantLabels.size() > 0)
+		if(dominantLabels.size() > 0 && labelCounts.size() > 0) 
 		{
-			dominantLabelIndex = Collections.max(dominantLabels); //Value
-			index = dominantLabels.indexOf(dominantLabelIndex);
+			dominantLabelIndex = Collections.max(labelCounts); //Value
+			index = labelCounts.indexOf(dominantLabelIndex);
 		}
 
 		if(dominantLabels.size() > 0)
 		{
-			if(threshold.get(dominantLabelIndex) < partitionSize)
+			while(labelCounts.size() > 0)
 			{
-
-				//System.out.println("Removing Label which exceeds Threshold");
-				int currentVal = currentNode.getLabel();		
-				int nVal = threshold.get(dominantLabelIndex) + 1;
-				threshold.set(dominantLabelIndex, nVal);
-				int cVal = threshold.get(currentVal) - 1;
-				threshold.set(currentVal, cVal);
-				if (labelCounts.get(currentVal) != maxCount) 
+				System.out.println("Looping");
+				if(threshold.get(index) < partitionSize )
 				{
-					continueRunning = true;
-				}
-				currentNode.setLabel(dominantLabelIndex);
-				dominantLabels.clear();
-			}
-			else if(threshold.get(dominantLabelIndex) == partitionSize &&  currentNode.getLabel() == dominantLabelIndex)
-			{
-				int currentVal = currentNode.getLabel();
-				if (labelCounts.get(currentVal) != maxCount) 
-				{
-					continueRunning = true;
-				}
-				dominantLabels.clear();
-			}
-			else
-			{
-				while(index > 0)
-				{
-					dominantLabels.remove(index);
-					index = dominantLabels.indexOf(dominantLabelIndex);
-				}
-				
-				while(dominantLabels.size() > 0)
-				{
-					int val = Collections.min(dominantLabels);
-					int valIndex = dominantLabels.indexOf(val);
-					if(threshold.get(val) == partitionSize)
+					System.out.println("Threshold < Size");
+					int currentVal = currentNode.getLabel();		
+					int nVal = threshold.get(index) + 1;
+					threshold.set(index, nVal);
+					int cVal = threshold.get(currentVal) - 1;
+					threshold.set(currentVal, cVal);
+					if (labelCounts.get(currentVal) != maxCount) 
 					{
-						//System.out.println("Removing Label which exceeds Threshold");
-						dominantLabels.remove(valIndex);
+						continueRunning = true;
+					}
+					currentNode.setLabel(index);
+					dominantLabels.clear();
+					break;
+				}
+				else if(threshold.get(index) == partitionSize &&  currentNode.getLabel() == index )
+				{
+					System.out.println("Threshold  = Size and Label != Index");
+					int currentVal = currentNode.getLabel();
+					if (labelCounts.get(currentVal) != maxCount) 
+					{
+						continueRunning = true;
+					}
+					dominantLabels.clear();
+					break;
+				}
+				else if(threshold.get(index) == partitionSize &&  currentNode.getLabel() != index )
+				{
+					System.out.println("Threshold  = Size and Label = Index");
+					labelCounts.set(index,0);
+					dominantLabelIndex = Collections.max(labelCounts); //Value
+					index = labelCounts.indexOf(dominantLabelIndex);
+
+					if(dominantLabelIndex == 1 && dominantLabels.size() > 0)
+					{					
+						//System.out.println("Looping");
+						index = Collections.min(dominantLabels);
 						continue;
 					}
-					else				
+					else if (dominantLabelIndex > 1 && dominantLabels.size() > 0)
 					{
-						//System.out.println("In Else");
-						int currentVal = currentNode.getLabel();		
-						int nVal = threshold.get(val) + 1;
-						threshold.set(val, nVal);
-						int cVal = threshold.get(currentVal) - 1;
-						threshold.set(currentVal, cVal);
-						if (labelCounts.get(currentVal) != maxCount) 
-						{
-							//System.out.println("Changing Continue Running?");
-							continueRunning = true;
-						}
-						currentNode.setLabel(val);
-						dominantLabels.clear();
+						//System.out.println("Looping");
+						continue;
 					}
+
 				}
 			}
 		}
