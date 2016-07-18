@@ -26,8 +26,6 @@ public class LabelPropagationWorker implements Callable<Boolean>
 			labelCounts.add(Integer.valueOf(0));
 		}
 
-		//randGen = new Random();
-
 		this.nodeList = nodeList;//Shared reference
 		this.threshold = threshold;
 
@@ -81,10 +79,10 @@ public class LabelPropagationWorker implements Callable<Boolean>
 
 		}
 
-		int dominantLabelIndex = -1, index = -1;
+		int dominantLabelIndex = -1, index = -1, count = 0;
 		
-		System.out.println(dominantLabels);
-		System.out.println(labelCounts);
+	//	System.out.println(dominantLabels);
+	//	System.out.println(labelCounts);
 
 		if(dominantLabels.size() > 0 && labelCounts.size() > 0) 
 		{
@@ -96,10 +94,10 @@ public class LabelPropagationWorker implements Callable<Boolean>
 		{
 			while(labelCounts.size() > 0)
 			{
-				System.out.println("Looping");
+				//System.out.println("Looping");
 				if(threshold.get(index) < partitionSize )
 				{
-					System.out.println("Threshold < Size");
+					//System.out.println("Threshold < Size");
 					int currentVal = currentNode.getLabel();		
 					int nVal = threshold.get(index) + 1;
 					threshold.set(index, nVal);
@@ -115,7 +113,7 @@ public class LabelPropagationWorker implements Callable<Boolean>
 				}
 				else if(threshold.get(index) == partitionSize &&  currentNode.getLabel() == index )
 				{
-					System.out.println("Threshold  = Size and Label != Index");
+					//System.out.println("Threshold  = Size and Label == Index");
 					int currentVal = currentNode.getLabel();
 					if (labelCounts.get(currentVal) != maxCount) 
 					{
@@ -126,20 +124,25 @@ public class LabelPropagationWorker implements Callable<Boolean>
 				}
 				else if(threshold.get(index) == partitionSize &&  currentNode.getLabel() != index )
 				{
-					System.out.println("Threshold  = Size and Label = Index");
+					//System.out.println("Threshold  = Size and Label != Index");
 					labelCounts.set(index,0);
 					dominantLabelIndex = Collections.max(labelCounts); //Value
 					index = labelCounts.indexOf(dominantLabelIndex);
 
 					if(dominantLabelIndex == 1 && dominantLabels.size() > 0)
 					{					
-						//System.out.println("Looping");
 						index = Collections.min(dominantLabels);
+						int i = dominantLabels.indexOf(index);
+						count++;
+						if(count>0)
+						{
+							dominantLabels.remove(i);
+							index = Collections.min(dominantLabels);
+						}
 						continue;
 					}
 					else if (dominantLabelIndex > 1 && dominantLabels.size() > 0)
 					{
-						//System.out.println("Looping");
 						continue;
 					}
 
