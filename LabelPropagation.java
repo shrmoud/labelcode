@@ -32,7 +32,7 @@ public class LabelPropagation
 
 
 
-	public int edgeCuts() throws IOException 
+	public void edgeCuts() throws IOException 
 	{
 		int counts = 0;
 		Node node;
@@ -53,7 +53,8 @@ public class LabelPropagation
 				}
 			} 			
 		}
-		return counts;
+		counts = counts/2;
+		System.out.println("The total edge counts is "+ counts);
 	}
 
 
@@ -246,6 +247,7 @@ public class LabelPropagation
 		lp.findCommunities("base_output_path",numThreads); //directory to save current list of communities to after each pass as well as final output files
 		lp.writeMemberships("membership.txt");
 		lp.writeMembershipsSmart("memberships_renumbered.txt");
+		lp.edgeCuts();
 
 		long estimatedTime = System.nanoTime() - startTime;
 		System.out.println("Elapsed Time is "+estimatedTime);
