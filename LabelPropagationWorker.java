@@ -75,21 +75,23 @@ public class LabelPropagationWorker implements Callable<Boolean>
 
 		}
 
+		int dominantLabelIndex = -1, index = -1, count = 0;
 
-		int dominantLabelIndex = -1, index = -1;
+		//	System.out.println(dominantLabels);
+		//	System.out.println(labelCounts);
 
-		if(dominantLabels.size() > 0)
+		if(dominantLabels.size() > 0 && labelCounts.size() > 0) 
 		{
 			dominantLabelIndex = Collections.max(labelCounts); //Value
 			index = labelCounts.indexOf(dominantLabelIndex);
 		}
 
-		if(dominantLabels.size() > 0)
+		while(labelCounts.size() > 0 && dominantLabels.size() > 0)
 		{
-			if(threshold.get(index) < partitionSize)
+			//System.out.println("Looping");
+			if(threshold.get(index) < partitionSize )
 			{
-
-				//System.out.println("Removing Label which exceeds Threshold");
+				//System.out.println("Threshold < Size");
 				int currentVal = currentNode.getLabel();		
 				int nVal = threshold.get(index) + 1;
 				threshold.set(index, nVal);
@@ -101,55 +103,44 @@ public class LabelPropagationWorker implements Callable<Boolean>
 				}
 				currentNode.setLabel(index);
 				dominantLabels.clear();
+				break;
 			}
-			else if(threshold.get(index) == partitionSize &&  currentNode.getLabel() == index)
+			else if(threshold.get(index) == partitionSize &&  currentNode.getLabel() == index )
 			{
+				//System.out.println("Threshold  = Size and Label == Index");
 				int currentVal = currentNode.getLabel();
 				if (labelCounts.get(currentVal) != maxCount) 
 				{
 					continueRunning = true;
 				}
 				dominantLabels.clear();
+				break;
 			}
-			else
+			else if(threshold.get(index) == partitionSize &&  currentNode.getLabel() != index )
 			{
-				int index2 = 1;
-				while(index2 > 0)
-				{
-					index2 = dominantLabels.indexOf(dominantLabelIndex);
-					if(index2 > 0)
+				//System.out.println("Threshold  = Size and Label != Index");
+				labelCounts.set(index,0);
+				dominantLabelIndex = Collections.max(labelCounts); //Value
+				index = labelCounts.indexOf(dominantLabelIndex);
+
+				if(dominantLabelIndex == 1 && dominantLabels.size() > 0)
+				{					
+					index = Collections.min(dominantLabels);
+					int i = dominantLabels.indexOf(index);
+					count++;
+					if(count>0)
 					{
-						dominantLabels.remove(index2);	
-					}
-					
-				}
-				
-				while(dominantLabels.size() > 0)
-				{
-					int val = Collections.min(dominantLabels);
-					int valIndex = dominantLabels.indexOf(val);
-					if(threshold.get(val) == partitionSize)
-					{
-						//System.out.println("Removing Label which exceeds Threshold");
-						dominantLabels.remove(valIndex);
-						continue;
-					}
-					else				
-					{
-						//System.out.println("In Else");
-						int currentVal = currentNode.getLabel();		
-						int nVal = threshold.get(val) + 1;
-						threshold.set(val, nVal);
-						int cVal = threshold.get(currentVal) - 1;
-						threshold.set(currentVal, cVal);
-						if (labelCounts.get(currentVal) != maxCount) 
+						dominantLabels.remove(i);
+						if(dominantLabels.size() > 0)
 						{
-							//System.out.println("Changing Continue Running?");
-							continueRunning = true;
+							index = Collections.min(dominantLabels);
 						}
-						currentNode.setLabel(val);
-						dominantLabels.clear();
+						else
+						{
+							break;
+						}
 					}
+					//continue;
 				}
 			}
 		}

@@ -6,23 +6,67 @@ import java.io.OutputStreamWriter;
 import java.nio.charset.Charset;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.Vector;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-public class LabelPropagation {
+public class LabelPropagation 
+{
 
 	private Vector<Node> nodeList;
 	private Vector<Integer> nodeOrder;
 	private Vector<Integer> threshold;
 
-	public LabelPropagation() {	}
+	public LabelPropagation() 
+	{
+	}
 
-	public void readEdges(int numNodes, String file) throws IOException {
+
+
+
+
+
+	public int edgeCuts() throws IOException 
+	{
+		int counts = 0;
+		Node node;
+		int nodeLabel = -1; //neighborLabel = -1;
+		Set<Integer> neighbor;
+
+		for(int i=0;i<nodeList.size();i++)
+		{
+			node = nodeList.get(i);
+			nodeLabel = node.getLabel();
+			neighbor = node.getNeighbors();
+
+			Iterator it = neighbor.iterator();
+			while (it.hasNext()) {
+				if((int)it.next() == nodeLabel)
+				{
+					counts++;
+				}
+			} 			
+		}
+		return counts;
+	}
+
+
+
+
+
+
+
+
+
+
+	public void readEdges(int numNodes, String file) throws IOException 
+	{
 		BufferedReader br = new BufferedReader(new FileReader(file));
 
 		nodeList = new Vector<Node>(numNodes);
