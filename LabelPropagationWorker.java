@@ -57,7 +57,7 @@ public class LabelPropagationWorker implements Callable<Boolean>
 
 			int nLabel = nodeList.get(neighborId).getLabel();
 			if (nLabel == 0)
-				continue; // No label yet (only if initial labels are given?)
+				continue; // No label yet
 
 			int nLabelCount = labelCounts.get(nLabel) + 1;
 			labelCounts.set(nLabel, nLabelCount);
@@ -66,13 +66,8 @@ public class LabelPropagationWorker implements Callable<Boolean>
 			{
 				maxCount = nLabelCount;
 				//dominantLabels.clear();
-				dominantLabels.add(nLabel);
 			}
-			else if (maxCount == nLabelCount) 
-			{
-				dominantLabels.add(nLabel);
-			}
-
+			dominantLabels.add(nLabel);
 		}
 
 		int dominantLabelIndex = -1, index = -1, count = 0;
@@ -97,10 +92,7 @@ public class LabelPropagationWorker implements Callable<Boolean>
 				threshold.set(index, nVal);
 				int cVal = threshold.get(currentVal) - 1;
 				threshold.set(currentVal, cVal);
-				if (labelCounts.get(currentVal) != maxCount) 
-				{
-					continueRunning = true;
-				}
+				continueRunning = false;
 				currentNode.setLabel(index);
 				dominantLabels.clear();
 				break;
@@ -109,10 +101,7 @@ public class LabelPropagationWorker implements Callable<Boolean>
 			{
 				//System.out.println("Threshold  = Size and Label == Index");
 				int currentVal = currentNode.getLabel();
-				if (labelCounts.get(currentVal) != maxCount) 
-				{
-					continueRunning = true;
-				}
+				continueRunning = false;
 				dominantLabels.clear();
 				break;
 			}
@@ -122,7 +111,7 @@ public class LabelPropagationWorker implements Callable<Boolean>
 				labelCounts.set(index,0);
 				dominantLabelIndex = Collections.max(labelCounts); //Value
 				index = labelCounts.indexOf(dominantLabelIndex);
-
+				continueRunning = true;
 				if(dominantLabelIndex == 1 && dominantLabels.size() > 0)
 				{					
 					index = Collections.min(dominantLabels);
@@ -137,10 +126,10 @@ public class LabelPropagationWorker implements Callable<Boolean>
 						}
 						else
 						{
+							continueRunning = false;
 							break;
 						}
 					}
-					//continue;
 				}
 			}
 		}

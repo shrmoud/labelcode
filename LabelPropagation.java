@@ -27,43 +27,32 @@ public class LabelPropagation
 	{
 	}
 
-
-
-
-
-
 	public void edgeCuts() throws IOException 
 	{
 		int counts = 0;
 		Node node;
-		int nodeLabel = -1; //neighborLabel = -1;
-		Set<Integer> neighbor;
+		int nodeLabel = -1;
 
 		for(int i=0;i<nodeList.size();i++)
 		{
 			node = nodeList.get(i);
 			nodeLabel = node.getLabel();
-			neighbor = node.getNeighbors();
+			for (Integer neighborId : node.getNeighbors()) 
+			{
 
-			Iterator it = neighbor.iterator();
-			while (it.hasNext()) {
-				if((int)it.next() == nodeLabel)
+				int nLabel = nodeList.get(neighborId).getLabel();
+				if (nLabel == 0)
+					continue; // No label yet
+			
+				if (nodeLabel != nLabel) 
 				{
 					counts++;
 				}
-			} 			
+			}	
 		}
 		counts = counts/2;
 		System.out.println("The total edge counts is "+ counts);
 	}
-
-
-
-
-
-
-
-
 
 
 	public void readEdges(int numNodes, String file) throws IOException 
