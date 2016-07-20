@@ -57,7 +57,7 @@ public class LabelPropagationWorker implements Callable<Boolean>
 
 			int nLabel = nodeList.get(neighborId).getLabel();
 			if (nLabel == 0)
-				continue; // No label yet
+				continue; // No label yet (only if initial labels are given?)
 
 			int nLabelCount = labelCounts.get(nLabel) + 1;
 			labelCounts.set(nLabel, nLabelCount);
@@ -66,69 +66,91 @@ public class LabelPropagationWorker implements Callable<Boolean>
 			{
 				maxCount = nLabelCount;
 				//dominantLabels.clear();
+				dominantLabels.add(nLabel);
 			}
-			dominantLabels.add(nLabel);
+			else if (maxCount == nLabelCount) 
+			{
+				dominantLabels.add(nLabel);
+			}
+
 		}
 
-		int dominantLabelIndex = -1, index = -1, count = 0;
 
-		//	System.out.println(dominantLabels);
-		//	System.out.println(labelCounts);
+		int dominantLabelIndex = -1, index = -1;
 
-		if(dominantLabels.size() > 0 && labelCounts.size() > 0) 
+		if(dominantLabels.size() > 0)
 		{
 			dominantLabelIndex = Collections.max(labelCounts); //Value
 			index = labelCounts.indexOf(dominantLabelIndex);
 		}
 
-		while(labelCounts.size() > 0 && dominantLabels.size() > 0)
+		if(dominantLabels.size() > 0)
 		{
-			//System.out.println("Looping");
-			if(threshold.get(index) < partitionSize )
+			if(threshold.get(index) < partitionSize)
 			{
-				//System.out.println("Threshold < Size");
+
+				//System.out.println("Removing Label which exceeds Threshold");
 				int currentVal = currentNode.getLabel();		
 				int nVal = threshold.get(index) + 1;
 				threshold.set(index, nVal);
 				int cVal = threshold.get(currentVal) - 1;
 				threshold.set(currentVal, cVal);
-				continueRunning = false;
+				
+				if (labelCounts.get(currentVal) < maxCount) 
+				{
+					continueRunning = true;
+				}
+				
 				currentNode.setLabel(index);
 				dominantLabels.clear();
-				break;
 			}
-			else if(threshold.get(index) == partitionSize &&  currentNode.getLabel() == index )
+			else if(threshold.get(index) == partitionSize &&  currentNode.getLabel() == index)
 			{
-				//System.out.println("Threshold  = Size and Label == Index");
 				int currentVal = currentNode.getLabel();
-				continueRunning = false;
+				if (labelCounts.get(currentVal) < maxCount) 
+				{
+					continueRunning = true;
+				}
 				dominantLabels.clear();
-				break;
 			}
-			else if(threshold.get(index) == partitionSize &&  currentNode.getLabel() != index )
+			else
 			{
-				//System.out.println("Threshold  = Size and Label != Index");
-				labelCounts.set(index,0);
-				dominantLabelIndex = Collections.max(labelCounts); //Value
-				index = labelCounts.indexOf(dominantLabelIndex);
-				continueRunning = true;
-				if(dominantLabelIndex == 1 && dominantLabels.size() > 0)
-				{					
-					index = Collections.min(dominantLabels);
-					int i = dominantLabels.indexOf(index);
-					count++;
-					if(count>0)
+				int index2 = 1;
+				while(index2 > 0)
+				{
+					index2 = dominantLabels.indexOf(dominantLabelIndex);
+					if(index2 > 0)
 					{
-						dominantLabels.remove(i);
-						if(dominantLabels.size() > 0)
+						dominantLabels.remove(index2);	
+					}
+					
+				}
+				
+				while(dominantLabels.size() > 0)
+				{
+					int val = Collections.min(dominantLabels);
+					int valIndex = dominantLabels.indexOf(val);
+					if(threshold.get(val) == partitionSize)
+					{
+						//System.out.println("Removing Label which exceeds Threshold");
+						dominantLabels.remove(valIndex);
+						continue;
+					}
+					else				
+					{
+						//System.out.println("In Else");
+						int currentVal = currentNode.getLabel();		
+						int nVal = threshold.get(val) + 1;
+						threshold.set(val, nVal);
+						int cVal = threshold.get(currentVal) - 1;
+						threshold.set(currentVal, cVal);
+						if (labelCounts.get(currentVal) < maxCount) 
 						{
-							index = Collections.min(dominantLabels);
+							//System.out.println("Changing Continue Running?");
+							continueRunning = true;
 						}
-						else
-						{
-							continueRunning = false;
-							break;
-						}
+						currentNode.setLabel(val);
+						dominantLabels.clear();
 					}
 				}
 			}

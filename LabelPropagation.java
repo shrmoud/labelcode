@@ -174,9 +174,11 @@ public class LabelPropagation
 		}
 
 		int iter=0;
-		int nodesChanged=100;
-		while (nodesChanged>0) 
+		int nodesChanged=101;
+		
+		while (nodesChanged>100)
 		{
+			
 			nodesChanged=0;
 			System.out.println("Running " + (++iter) + " iteration at " + System.currentTimeMillis() + ".");
 
