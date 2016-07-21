@@ -1,0 +1,197 @@
+guest-mUnth0@cs553:~/Documents/lp/labelcode$ java LabelPropagation
+Added 196591 nodes.
+All edges read.
+Worker created.
+Worker created.
+Worker created.
+Worker created.
+Worker created.
+Worker created.
+Worker created.
+Worker created.
+Running 1 iteration at 1469121510609.
+Another pass will be needed.
+24574 nodes were changed in the last iteration.
+Running 2 iteration at 1469121815988.
+Another pass will be needed.
+21482 nodes were changed in the last iteration.
+Running 3 iteration at 1469122115671.
+Another pass will be needed.
+14825 nodes were changed in the last iteration.
+Running 4 iteration at 1469122415537.
+Another pass will be needed.
+11515 nodes were changed in the last iteration.
+Running 5 iteration at 1469122715559.
+Another pass will be needed.
+9947 nodes were changed in the last iteration.
+Running 6 iteration at 1469123015350.
+Another pass will be needed.
+8913 nodes were changed in the last iteration.
+Running 7 iteration at 1469123315142.
+Another pass will be needed.
+8021 nodes were changed in the last iteration.
+Running 8 iteration at 1469123614590.
+Another pass will be needed.
+7638 nodes were changed in the last iteration.
+Running 9 iteration at 1469123914146.
+Another pass will be needed.
+7237 nodes were changed in the last iteration.
+Running 10 iteration at 1469124213643.
+Another pass will be needed.
+6882 nodes were changed in the last iteration.
+Running 11 iteration at 1469124513294.
+Another pass will be needed.
+6770 nodes were changed in the last iteration.
+Running 12 iteration at 1469124812943.
+Another pass will be needed.
+6505 nodes were changed in the last iteration.
+Running 13 iteration at 1469125112718.
+Another pass will be needed.
+6353 nodes were changed in the last iteration.
+Running 14 iteration at 1469125412468.
+Another pass will be needed.
+6190 nodes were changed in the last iteration.
+Running 15 iteration at 1469125711981.
+Another pass will be needed.
+5969 nodes were changed in the last iteration.
+Running 16 iteration at 1469126011496.
+Another pass will be needed.
+5937 nodes were changed in the last iteration.
+Running 17 iteration at 1469126311136.
+Another pass will be needed.
+5956 nodes were changed in the last iteration.
+Running 18 iteration at 1469126610309.
+Another pass will be needed.
+5744 nodes were changed in the last iteration.
+Running 19 iteration at 1469126909705.
+Another pass will be needed.
+5775 nodes were changed in the last iteration.
+Running 20 iteration at 1469127208964.
+Another pass will be needed.
+5802 nodes were changed in the last iteration.
+Running 21 iteration at 1469127508338.
+Another pass will be needed.
+5680 nodes were changed in the last iteration.
+Running 22 iteration at 1469127807593.
+Another pass will be needed.
+5715 nodes were changed in the last iteration.
+Running 23 iteration at 1469128106900.
+Another pass will be needed.
+5574 nodes were changed in the last iteration.
+Running 24 iteration at 1469128406351.
+Another pass will be needed.
+5560 nodes were changed in the last iteration.
+Running 25 iteration at 1469128705829.
+Another pass will be needed.
+5623 nodes were changed in the last iteration.
+Running 26 iteration at 1469129004882.
+Another pass will be needed.
+5618 nodes were changed in the last iteration.
+Running 27 iteration at 1469129304174.
+Another pass will be needed.
+5474 nodes were changed in the last iteration.
+Running 28 iteration at 1469129603825.
+Another pass will be needed.
+5408 nodes were changed in the last iteration.
+Running 29 iteration at 1469129903456.
+Another pass will be needed.
+5438 nodes were changed in the last iteration.
+Running 30 iteration at 1469130203153.
+Another pass will be needed.
+5478 nodes were changed in the last iteration.
+Running 31 iteration at 1469130502637.
+Another pass will be needed.
+5508 nodes were changed in the last iteration.
+Running 32 iteration at 1469130802385.
+Another pass will be needed.
+5440 nodes were changed in the last iteration.
+Running 33 iteration at 1469131101667.
+Another pass will be needed.
+5419 nodes were changed in the last iteration.
+Running 34 iteration at 1469131400958.
+Another pass will be needed.
+5393 nodes were changed in the last iteration.
+Running 35 iteration at 1469131701089.
+Another pass will be needed.
+5381 nodes were changed in the last iteration.
+Running 36 iteration at 1469132000490.
+Another pass will be needed.
+^Cguest-mUnth0@cs553:~/Documents/lp/labelcode$ vim LabelPropagation.java 
+guest-mUnth0@cs553:~/Documents/lp/labelcode$ javac LabelPropagation.java 
+guest-mUnth0@cs553:~/Documents/lp/labelcode$ tops
+No command 'tops' found, did you mean:
+ Command 'top' from package 'procps' (main)
+ Command 'toms' from package 'flip' (universe)
+tops: command not found
+guest-mUnth0@cs553:~/Documents/lp/labelcode$ clear
+
+guest-mUnth0@cs553:~/Documents/lp/labelcode$ java LabelPropagation
+Added 196591 nodes.
+All edges read.
+Worker created.
+Worker created.
+Worker created.
+Worker created.
+Worker created.
+Worker created.
+Worker created.
+Worker created.
+Running 1 iteration at 1469132185753.
+Another pass will be needed.
+24574 nodes were changed in the last iteration.
+Running 2 iteration at 1469132486958.
+Another pass will be needed.
+21605 nodes were changed in the last iteration.
+Running 3 iteration at 1469132785361.
+Another pass will be needed.
+14747 nodes were changed in the last iteration.
+Running 4 iteration at 1469133083648.
+Another pass will be needed.
+11395 nodes were changed in the last iteration.
+Running 5 iteration at 1469133381931.
+Another pass will be needed.
+9484 nodes were changed in the last iteration.
+Running 6 iteration at 1469133680992.
+Another pass will be needed.
+8402 nodes were changed in the last iteration.
+Running 7 iteration at 1469133979276.
+Another pass will be needed.
+7726 nodes were changed in the last iteration.
+Running 8 iteration at 1469134277861.
+Another pass will be needed.
+7299 nodes were changed in the last iteration.
+Running 9 iteration at 1469134575737.
+Another pass will be needed.
+6832 nodes were changed in the last iteration.
+Running 10 iteration at 1469134873771.
+Another pass will be needed.
+6656 nodes were changed in the last iteration.
+Running 11 iteration at 1469135172521.
+Another pass will be needed.
+6289 nodes were changed in the last iteration.
+Running 12 iteration at 1469135470773.
+Another pass will be needed.
+6095 nodes were changed in the last iteration.
+Running 13 iteration at 1469135768466.
+Another pass will be needed.
+5842 nodes were changed in the last iteration.
+Running 14 iteration at 1469136066701.
+Another pass will be needed.
+5602 nodes were changed in the last iteration.
+Running 15 iteration at 1469136364613.
+Another pass will be needed.
+5581 nodes were changed in the last iteration.
+Running 16 iteration at 1469136662273.
+Another pass will be needed.
+5550 nodes were changed in the last iteration.
+Running 17 iteration at 1469136960068.
+Another pass will be needed.
+5406 nodes were changed in the last iteration.
+Detection complete!
+Writing membership.
+Membership list written.
+Writing membership smart.
+Found 15069 communities.
+Smart membership list written.
+The total edge counts is 585663
+Elapsed Time is 5081943373578
