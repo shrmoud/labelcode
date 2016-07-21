@@ -71,7 +71,7 @@ public class LabelPropagation
 
 		String line = br.readLine();
 		while (line!=null) {
-			String[] parts = line.split("  ");
+			String[] parts = line.split("\t");
 
 			int source = Integer.valueOf(parts[0]);
 			int target = Integer.valueOf(parts[1]);
@@ -116,7 +116,7 @@ public class LabelPropagation
 		String line = br.readLine();
 		while (line!=null) 
 		{
-			String[] parts = line.split(" ");
+			String[] parts = line.split("\t");
 			int nodeId = Integer.valueOf(parts[0]);
 			int label = Integer.valueOf(parts[1]);
 			nodeList.get(nodeId).setLabel(label);
@@ -174,9 +174,9 @@ public class LabelPropagation
 		}
 
 		int iter=0;
-		int nodesChanged=101;
+		int nodesChanged=201;
 		
-		while (nodesChanged>100)
+		while (nodesChanged>200)
 		{
 			
 			nodesChanged=0;
@@ -216,7 +216,7 @@ public class LabelPropagation
 			//Pass complete
 			if (basepath!=null) 
 			{
-				writeMemberships(basepath+"iter" + iter +"memberships.txt");
+				//writeMemberships(basepath+"iter" + iter +"memberships.txt");
 				System.out.println(nodesChanged + " nodes were changed in the last iteration.");
 			}
 		}
@@ -229,12 +229,12 @@ public class LabelPropagation
 	{
 		LabelPropagation lp = new LabelPropagation();
 
-		int numNodes = 10879; //Number of nodes in the network
+		int numNodes = 196591; //Number of nodes in the network
 		int numThreads= 8; //Number of threads to use
 
 		long startTime = System.nanoTime();
 		//input is "edgelist" format "id id" sorted by first id (ids are sequentially numbered 1 to numNodes inclusive)
-		lp.readEdges(numNodes, "test3.txt");
+		lp.readEdges(numNodes, "gedges.txt");
 		lp.findCommunities("base_output_path",numThreads); //directory to save current list of communities to after each pass as well as final output files
 		lp.writeMemberships("membership.txt");
 		lp.writeMembershipsSmart("memberships_renumbered.txt");

@@ -8,7 +8,7 @@ public class LabelPropagationWorker implements Callable<Boolean>
 	private Vector<Integer> dominantLabels;
 	private Vector<Integer> labelCounts;
 	private int nodeId;
-	private int partitionSize = 100; //Number of Partition Needed from the Graph
+	private int partitionSize = 200; //Number of Partition Needed from the Graph
 	private Vector<Node> nodeList; 	// Shared
 	private Vector<Integer> threshold; 	// Shared
 
